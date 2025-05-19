@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Into Mulher</title>
+  <style>
+    body {
+      background-color: #fff0f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      color: #4a144a;
+    }
+    h1 {
+      text-align: center;
+      color: #d81b60;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #f48fb1;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    .danger {
+      background-color: #e53935;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Into Mulher - Espaço de Apoio</h1>
+  <p>Compartilhe sua experiência (com nome ou anonimamente). Escolha uma categoria.</p>
+
+  <input type="text" id="nome" placeholder="Seu nome (opcional)">
+  <select id="categoria">
+    <option value="assédio">Assédio</option>
+    <option value="bullying">Bullying</option>
+    <option value="desrespeito">Desrespeito</option>
+    <option value="outro">Outro</option>
+  </select>
+  <textarea id="relato" rows="6" placeholder="Escreva seu relato aqui..."></textarea>
+  <button onclick="enviarRelato()">Enviar</button>
+
+  <button class="danger" onclick="window.location.href='https://wa.me/seunumeroaqui'">🚨 Botão de Emergência</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      databaseURL: "https://note-has-default-rtdb.firebaseio.com",
+      projectId: "note-has",
+      storageBucket: "note-has.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function enviarRelato() {
+      const nome = document.getElementById("nome").value.trim() || "Anônimo";
+      const categoria = document.getElementById("categoria").value;
+      const relato = document.getElementById("relato").value.trim();
+
+      if (relato === "") {
+        alert("Por favor, escreva um relato.");
+        return;
+      }
+
+      const novoRelato = {
+        nome,
+        categoria,
+        relato,
+        data: new Date().toLocaleString()
+      };
+
+      db.ref("relatos").push(novoRelato);
+      alert("Relato enviado com sucesso!");
+      document.getElementById("nome").value = "";
+      document.getElementById("relato").value = "";
+    }
+  </script>
+</body>
+</html>

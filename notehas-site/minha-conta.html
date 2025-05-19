@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Minha Conta - NOTE-HAS</title>
+  <style>
+    body {
+      background-color: #fce4ec;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #880e4f;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #info-usuario {
+      background-color: #fff0f6;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #f48fb1;
+      margin-bottom: 30px;
+    }
+
+    #info-usuario img {
+      border-radius: 15px;
+      margin-bottom: 15px;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    .btn {
+      display: block;
+      width: 80%;
+      max-width: 350px;
+      margin: 12px auto;
+      padding: 15px;
+      background-color: #f8bbd0;
+      border: none;
+      border-radius: 40px;
+      font-size: 22px;
+      color: #880e4f;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 3px 6px #ce93d8;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #f48fb1;
+    }
+
+    #btn-voltar {
+      margin-top: 40px;
+      background-color: #f06292;
+      color: white;
+      box-shadow: 0 3px 6px #ec407a;
+    }
+
+    #btn-voltar:hover {
+      background-color: #e91e63;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Minha Conta</h1>
+
+    <div id="info-usuario">
+      <!-- Dados do usuário aparecerão aqui -->
+    </div>
+
+    <button class="btn" onclick="window.location.href='grupo.html'">Grupo</button>
+    <button class="btn" onclick="window.location.href='agenda.html'">Agenda de Eventos e Atividades</button>
+    <button class="btn" onclick="window.location.href='relato.html'">Relato Inclusão</button>
+    <button class="btn" onclick="window.location.href='into-mulher.html'">Into Mulher</button>
+    <button class="btn" onclick="window.location.href='espaco-oportunidades.html'">Espaço de Oportunidades</button>
+
+    <button id="btn-voltar" class="btn" onclick="window.location.href='index.html'">Voltar</button>
+  </div>
+
+  <script>
+    // Recupera os dados do localStorage
+    const nome = localStorage.getItem('nome') || 'Nome não definido';
+    const instituicao = localStorage.getItem('instituicao') || 'Instituição não definida';
+    const curso = localStorage.getItem('curso') || 'Curso não definido';
+    const ano = localStorage.getItem('ano') || 'Ano não definido';
+    const foto = localStorage.getItem('fotoPerfil') || 'https://via.placeholder.com/120x120?text=Foto';
+
+    // Exibe os dados na página
+    document.getElementById('info-usuario').innerHTML = `
+      <img src="${foto}" alt="Foto do Usuário" />
+      <div><strong>${nome}</strong></div>
+      <div>${curso} - ${ano}</div>
+      <div>${instituicao}</div>
+    `;
+  </script>
+
+</body>
+</html>
+

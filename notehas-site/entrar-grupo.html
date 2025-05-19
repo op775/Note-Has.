@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrar em Grupo</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "note-has.firebaseapp.com",
+      databaseURL: "https://note-has-default-rtdb.firebaseio.com",
+      projectId: "note-has",
+      storageBucket: "note-has.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function entrarGrupo(event) {
+      event.preventDefault();
+      const codigo = document.getElementById("codigoGrupo").value;
+
+      database.ref("grupos/" + codigo).once("value")
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const grupo = snapshot.val();
+            alert("Entrou no grupo: " + grupo.nome);
+            localStorage.setItem("grupoAtual", JSON.stringify(grupo));
+            window.location.href = "sala-grupo.html";
+          } else {
+            alert("Código de grupo não encontrado.");
+          }
+        })
+        .catch(error => {
+          console.error("Erro ao buscar grupo:", error);
+          alert("Erro ao acessar o banco de dados.");
+        });
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #ffe4f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #4a144a;
+      margin: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #aa367c;
+      font-weight: 600;
+      margin-bottom: 25px;
+      font-size: 2rem;
+    }
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #f8c8dc;
+      padding: 25px 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(170, 54, 124, 0.3);
+      color: #4a144a;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 8px;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      border: 1px solid #f48fb1;
+      font-size: 1rem;
+      outline-color: #ec407a;
+    }
+    button[type="submit"], .voltar-btn {
+      background-color: #f48fb1;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    button:hover, .voltar-btn:hover {
+      background-color: #ec407a;
+    }
+    .voltar-btn {
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Entrar em um Grupo Existente</h1>
+  <form onsubmit="entrarGrupo(event)">
+    <label for="codigoGrupo">Digite o Código do Grupo:</label><br>
+    <input type="text" id="codigoGrupo" name="codigoGrupo" required><br>
+    <button type="submit">Entrar</button>
+  </form>
+
+  <button class="voltar-btn" onclick="window.location.href='grupo.html'">Voltar</button>
+</body>
+</html>

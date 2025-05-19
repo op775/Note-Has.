@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Criar Grupo - NOTE-HAS</title>
+  <style>
+    body {
+      background-color: #ffe4ec;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 30px;
+    }
+    .info-retangulo {
+      background-color: #f8c8dc;
+      border-radius: 20px;
+      padding: 15px 25px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+      text-align: left;
+      font-weight: bold;
+      color: #4a144a;
+      width: 250px;
+      font-size: 16px;
+    }
+    .info-retangulo p { margin: 6px 0; }
+    h1 {
+      color: #aa367c;
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 18px;
+      border: 2px solid #aa367c;
+      border-radius: 25px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      outline: none;
+    }
+    input[type="text"]:focus {
+      border-color: #f06292;
+    }
+    button {
+      background-color: #f48fb1;
+      border: none;
+      border-radius: 40px;
+      padding: 15px 60px;
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      width: 200px;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    .btn-voltar {
+      background-color: #f06292;
+      margin-top: 15px;
+      width: 150px;
+    }
+    .btn-voltar:hover {
+      background-color: #d81b60;
+    }
+    .message {
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="info-retangulo">
+      <p>Nome: <span id="nomeUser">Carregando...</span></p>
+      <p>Curso: <span id="cursoUser">Carregando...</span></p>
+      <p>Ano: <span id="anoUser">Carregando...</span></p>
+    </div>
+  </header>
+
+  <h1>Criar Grupo</h1>
+
+  <form id="criarGrupoForm">
+    <input type="text" name="nomeGrupo" placeholder="Nome do Grupo" required />
+    <input type="text" name="codigoGrupo" placeholder="Código de Entrada" required />
+    <button type="submit">Salvar</button>
+  </form>
+
+  <button class="btn-voltar" onclick="window.location.href='grupo.html'">Voltar</button>
+
+  <p class="message" id="msg"></p>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('nomeUser').textContent = localStorage.getItem('nome') || 'Não informado';
+      document.getElementById('cursoUser').textContent = localStorage.getItem('curso') || 'Não informado';
+      document.getElementById('anoUser').textContent = localStorage.getItem('ano') || 'Não informado';
+    });
+
+    document.getElementById('criarGrupoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nomeGrupo = this.nomeGrupo.value.trim();
+      const codigoGrupo = this.codigoGrupo.value.trim();
+
+      let meusGrupos = JSON.parse(localStorage.getItem('meusGrupos')) || [];
+      const grupoExistente = meusGrupos.find(g => g.codigo === codigoGrupo);
+      if (grupoExistente) {
+        alert('Já existe um grupo com esse código.');
+        return;
+      }
+
+      const novoGrupo = { nome: nomeGrupo, codigo: codigoGrupo };
+      meusGrupos.push(novoGrupo);
+      localStorage.setItem('meusGrupos', JSON.stringify(meusGrupos));
+
+      document.getElementById('msg').textContent = `Grupo "${nomeGrupo}" criado com sucesso!`;
+      this.reset();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Espaço de Relatos - Chat Público</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff0f5;
+      color: #4a144a;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #d81b60;
+    }
+    .chat-box {
+      background: #f8bbd0;
+      padding: 15px;
+      border-radius: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+      border: 1px solid #d81b60;
+    }
+    .mensagem {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #fce4ec;
+      position: relative;
+    }
+    .mensagem-diretoria {
+      background-color: #d81b60;
+      color: white;
+      margin-left: 20px;
+    }
+    .resposta-privada {
+      font-size: 0.9rem;
+      color: #111;
+      background: #fff;
+      border: 1px solid #d81b60;
+      margin-top: 5px;
+      padding: 5px;
+      border-radius: 6px;
+    }
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+    input, textarea {
+      flex: 1;
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #d81b60;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #aa1450;
+    }
+  </style>
+</head>
+<body>
+  <h1>Espaço de Relatos - Fale Conosco</h1>
+
+  <div class="chat-box" id="chatBox">
+    <!-- Mensagens públicas aparecerão aqui -->
+  </div>
+
+  <div class="input-area">
+    <textarea id="msgInput" rows="3" placeholder="Escreva seu relato aqui... (opcional: seu nome no final)"></textarea>
+    <button onclick="enviarMensagem()">Enviar</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      databaseURL: "https://note-has-default-rtdb.firebaseio.com/",
+      projectId: "note-has",
+      storageBucket: "note-has.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const chatBox = document.getElementById("chatBox");
+
+    // Função para mostrar mensagens e respostas
+    function mostrarMensagem(data) {
+      const msg = data.val();
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("mensagem");
+
+      msgDiv.innerHTML = `<strong>${msg.nome || 'Anônimo'}</strong>: ${msg.texto}`;
+
+      // Se tem resposta da diretoria, mostra aqui
+      if (msg.resposta) {
+        const respDiv = document.createElement("div");
+        respDiv.classList.add("resposta-privada");
+        respDiv.textContent = "Resposta da diretoria: " + msg.resposta;
+        msgDiv.appendChild(respDiv);
+      }
+
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Escutar mensagens novas
+    db.ref("relatosPublicos").on("child_added", snapshot => {
+      mostrarMensagem(snapshot);
+    });
+
+    // Enviar nova mensagem pública
+    function enviarMensagem() {
+      const texto = document.getElementById("msgInput").value.trim();
+      if (!texto) {
+        alert("Escreva algo antes de enviar.");
+        return;
+      }
+
+      const nome = prompt("Deseja informar seu nome? Deixe em branco para enviar anonimamente.") || "";
+
+      db.ref("relatosPublicos").push({
+        nome: nome.trim() || "Anônimo",
+        texto: texto,
+        resposta: ""
+      });
+
+      document.getElementById("msgInput").value = "";
+    }
+  </script>
+</body>
+</html>

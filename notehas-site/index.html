@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>NOTE-HAS - Página Inicial</title>
+  <style>
+    body {
+      background-color: #fce4ec;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #880e4f;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 50px;
+      margin-bottom: 50px;
+      border: 3px solid #f48fb1;
+      border-radius: 20px;
+      padding: 20px 40px;
+      background-color: #f8bbd0;
+      box-shadow: 0 4px 12px rgba(244, 143, 177, 0.7);
+      text-align: center;
+      user-select: none;
+    }
+    button {
+      background-color: #f48fb1;
+      border: none;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      border-radius: 50px;
+      padding: 20px 60px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 10px rgba(244, 143, 177, 0.8);
+      user-select: none;
+    }
+    button:hover {
+      background-color: #880e4f;
+      box-shadow: 0 6px 16px rgba(136, 14, 79, 0.9);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bem-vinda ao NOTE-HAS</h1>
+  
+  <button id="btnMinhaEtec">Minha Etec</button>
+
+  <script>
+    document.getElementById('btnMinhaEtec').addEventListener('click', function() {
+      window.location.href = 'cadastro.html';
+    });
+  </script>
+
+</body>
+</html>

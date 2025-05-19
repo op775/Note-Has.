@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Relatos - Chat Livre</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff0f5;
+      color: #4a144a;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #d81b60;
+      text-align: center;
+    }
+    .chat-box, .respostas-box {
+      background: #ffe4f0;
+      border-radius: 10px;
+      padding: 15px;
+      height: 250px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      border: 1px solid #d81b60;
+    }
+    .chat-input {
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #d81b60;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ad1457;
+    }
+    .mensagem {
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: #fce4ec;
+      border-radius: 8px;
+    }
+    .resposta {
+      background: #f8bbd0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Relatos - Espaço de Escuta</h1>
+
+<div>
+  <h2>Chat Público - Envie seu relato</h2>
+  <div class="chat-box" id="chatBox"></div>
+
+  <div class="chat-input">
+    <input type="text" id="mensagemInput" placeholder="Escreva seu relato..." />
+    <button onclick="enviarMensagem()">Enviar</button>
+  </div>
+</div>
+
+<div>
+  <h2>Respostas Privadas da Diretoria</h2>
+  <div class="respostas-box" id="respostasBox"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+  // Config Firebase - substitua pelos seus dados
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO.firebaseapp.com",
+    databaseURL: "https://note-has-default-rtdb.firebaseio.com/",
+    projectId: "note-has",
+    storageBucket: "note-has.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Gerar um ID único para identificar o usuário nesta sessão
+  // Pode ser salvo no localStorage para persistir enquanto durar a sessão
+  let usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
+  }
+
+  const chatBox = document.getElementById('chatBox');
+  const respostasBox = document.getElementById('respostasBox');
+
+  // Carregar mensagens públicas
+  db.ref('chatPublico').on('child_added', snapshot => {
+    const msg = snapshot.val();
+    const div = document.createElement('div');
+    div.className = 'mensagem';
+    div.textContent = msg.texto;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // Carregar respostas privadas só do usuário atual
+  db.ref('respostasPrivadas').orderByChild('usuarioId').equalTo(usuarioId).on('child_added', snapshot => {
+    const resp = snapshot.val();
+    const div = document.createElement('div');
+    div.className = 'mensagem resposta';
+    div.textContent = 'Resposta da diretoria: ' + resp.texto;
+    respostasBox.appendChild(div);
+    respostasBox.scrollTop = respostasBox.scrollHeight;
+  });
+
+  // Enviar mensagem pública
+  function enviarMensagem() {
+    const input = document.getElementById('mensagemInput');
+    const texto = input.value.trim();
+    if (texto === '') return;
+
+    // Salva a mensagem pública com o ID do usuário para referência futura
+    db.ref('chatPublico').push({
+      texto,
+      usuarioId,
+      timestamp: Date.now()
+    });
+
+    input.value = '';
+  }
+</script>
+
+</body>
+</html>

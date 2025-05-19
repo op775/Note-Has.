@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agenda de Eventos e Atividades</title>
+  <style>
+    body {
+      background-color: #fff0f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #4a144a;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      color: #d81b60;
+      text-align: center;
+    }
+
+    .section {
+      background: #ffe4f0;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(216, 27, 96, 0.2);
+    }
+
+    .evento {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #fce4ec;
+    }
+
+    .chat-box {
+      background: #f8bbd0;
+      padding: 15px;
+      border-radius: 10px;
+      height: 200px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+    }
+
+    input, textarea {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    button {
+      background-color: #f48fb1;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ec407a;
+    }
+
+    .publicar-btn {
+      display: block;
+      margin: 20px auto;
+      background-color: #d81b60;
+    }
+
+    .voltar-btn {
+      display: block;
+      margin: 40px auto 0;
+      background-color: #f48fb1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agenda de Eventos e Atividades</h1>
+
+  <button class="publicar-btn" onclick="window.location.href='publicar-evento.html'">Publicar Novo Evento</button>
+
+  <div class="section">
+    <h2>Palestras</h2>
+    <div id="listaPalestras"></div>
+  </div>
+
+  <div class="section">
+    <h2>Roda de Conversa (Chat Público)</h2>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input">
+      <input type="text" id="mensagemInput" placeholder="Escreva sua mensagem..." />
+      <button onclick="enviarMensagem()">Enviar</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Campanhas</h2>
+    <div id="listaCampanhas"></div>
+  </div>
+
+  <!-- Botão de Voltar -->
+  <button class="voltar-btn" onclick="window.location.href='minha-conta.html'">Voltar</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      databaseURL: "https://note-has-default-rtdb.firebaseio.com/",
+      projectId: "note-has",
+      storageBucket: "note-has.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Carrega eventos
+    db.ref("eventos").on("value", snapshot => {
+      const dados = snapshot.val();
+      document.getElementById("listaPalestras").innerHTML = "";
+      document.getElementById("listaCampanhas").innerHTML = "";
+
+      for (let id in dados) {
+        const evento = dados[id];
+        const div = document.createElement("div");
+        div.className = "evento";
+        div.innerHTML = `<strong>${evento.titulo}</strong><br>${evento.descricao}<br><small>${evento.data}</small>`;
+
+        if (evento.tipo === "Palestra") {
+          document.getElementById("listaPalestras").appendChild(div);
+        } else if (evento.tipo === "Campanha") {
+          document.getElementById("listaCampanhas").appendChild(div);
+        }
+      }
+    });
+
+    // Chat da Roda de Conversa
+    const chatBox = document.getElementById("chatBox");
+    db.ref("chatPublico").on("child_added", snapshot => {
+      const msg = snapshot.val();
+      const p = document.createElement("p");
+      p.textContent = msg.texto;
+      chatBox.appendChild(p);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    function enviarMensagem() {
+      const texto = document.getElementById("mensagemInput").value.trim();
+      if (texto === "") return;
+      db.ref("chatPublico").push({ texto });
+      document.getElementById("mensagemInput").value = "";
+    }
+  </script>
+</body>
+</html>

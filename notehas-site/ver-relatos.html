@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Coordenação - Visualizar Relatos</title>
+  <style>
+    body {
+      background-color: #fff0f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #4a144a;
+      padding: 20px;
+    }
+    h1 {
+      color: #d81b60;
+      text-align: center;
+    }
+    #loginContainer, #relatosContainer {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #ffe4f0;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(216, 27, 96, 0.2);
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #f48fb1;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ec407a;
+    }
+    .relato {
+      background: #fce4ec;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+    .relato strong {
+      color: #aa367c;
+    }
+    .categoria {
+      font-style: italic;
+      color: #d81b60;
+    }
+  </style>
+</head>
+<body>
+  <h1>Coordenação - Visualizar Relatos</h1>
+
+  <div id="loginContainer">
+    <p>Digite a senha para acessar os relatos:</p>
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="fazerLogin()">Entrar</button>
+  </div>
+
+  <div id="relatosContainer" style="display:none;">
+    <button onclick="fazerLogout()">Sair</button>
+    <h2>Relatos Recebidos</h2>
+    <div id="listaRelatos"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      databaseURL: "https://note-has-default-rtdb.firebaseio.com",
+      projectId: "note-has",
+      storageBucket: "note-has.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const senhaCorreta = "coord123"; // Troque para sua senha segura!
+
+    function fazerLogin() {
+      const senha = document.getElementById("senha").value;
+      if (senha === senhaCorreta) {
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("relatosContainer").style.display = "block";
+        carregarRelatos();
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function fazerLogout() {
+      document.getElementById("loginContainer").style.display = "block";
+      document.getElementById("relatosContainer").style.display = "none";
+      document.getElementById("senha").value = "";
+      document.getElementById("listaRelatos").innerHTML = "";
+    }
+
+    function carregarRelatos() {
+      const lista = document.getElementById("listaRelatos");
+      lista.innerHTML = "Carregando relatos...";
+      db.ref("relatos").on("value", snapshot => {
+        const dados = snapshot.val();
+        lista.innerHTML = "";
+        if (!dados) {
+          lista.innerHTML = "<p>Nenhum relato recebido.</p>";
+          return;
+        }
+        // Ordenar relatos por data decrescente (mais recentes primeiro)
+        const relatosArray = Object.values(dados).sort((a,b) => {
+          return new Date(b.data) - new Date(a.data);
+        });
+        relatosArray.forEach(relato => {
+          const div = document.createElement("div");
+          div.className = "relato";
+          div.innerHTML = `
+            <strong>Nome:</strong> ${relato.nome} <br>
+            <strong>Categoria:</strong> <span class="categoria">${relato.categoria}</span><br>
+            <strong>Relato:</strong> ${relato.relato} <br>
+            <small><em>Enviado em: ${relato.data}</em></small>
+          `;
+          lista.appendChild(div);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

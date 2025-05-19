@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro - NOTE-HAS</title>
+  <style>
+    body {
+      background-color: #fce4ec;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      color: #880e4f;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 30px;
+      border: 3px solid #f48fb1;
+      border-radius: 12px;
+      display: inline-block;
+      padding: 10px 25px;
+      background-color: #f8bbd0;
+    }
+    form {
+      background: #fce4ec;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(255, 182, 193, 0.6);
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px 0;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: left;
+    }
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 25px;
+      border: 2px solid #f48fb1;
+      font-size: 16px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #880e4f;
+    }
+    input[type="file"] {
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 15px;
+      border: 2px solid #f48fb1;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      background-color: #fff0f6;
+      color: #880e4f;
+    }
+    button {
+      margin-top: 30px;
+      background-color: #f48fb1;
+      border: none;
+      padding: 15px 50px;
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+      border-radius: 50px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #880e4f;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cadastro</h1>
+
+  <form id="cadastroForm">
+    <label for="nome">Nome</label>
+    <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required />
+
+    <label for="instituicao">Instituição de Ensino</label>
+    <input type="text" id="instituicao" name="instituicao" placeholder="Digite sua instituição" required />
+
+    <label for="curso">Curso</label>
+    <input type="text" id="curso" name="curso" placeholder="Digite seu curso" required />
+
+    <label for="ano">Ano</label>
+    <select id="ano" name="ano" required>
+      <option value="" disabled selected>Selecione o ano</option>
+      <option value="1º ano">1º ano</option>
+      <option value="2º ano">2º ano</option>
+      <option value="3º ano">3º ano</option>
+      
+    </select>
+
+    <label for="fotoPerfil">Foto de Perfil</label>
+    <input type="file" id="fotoPerfil" accept="image/*" />
+
+    <button type="submit">Avançar</button>
+  </form>
+
+  <script>
+    document.getElementById('cadastroForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nome = this.nome.value.trim();
+      const instituicao = this.instituicao.value.trim();
+      const curso = this.curso.value.trim();
+      const ano = this.ano.value;
+      const fotoInput = document.getElementById('fotoPerfil');
+      
+      if (fotoInput.files.length > 0) {
+        const file = fotoInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          const fotoBase64 = event.target.result;
+
+          salvarDados(nome, instituicao, curso, ano, fotoBase64);
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        // Se não escolher foto, salva uma foto padrão
+        salvarDados(nome, instituicao, curso, ano, 'https://via.placeholder.com/120x120?text=Foto');
+      }
+    });
+
+    function salvarDados(nome, instituicao, curso, ano, fotoBase64) {
+      localStorage.setItem('nome', nome);
+      localStorage.setItem('instituicao', instituicao);
+      localStorage.setItem('curso', curso);
+      localStorage.setItem('ano', ano);
+      localStorage.setItem('fotoPerfil', fotoBase64);
+
+      window.location.href = 'minha-conta.html';
+    }
+  </script>
+
+</body>
+</html>
